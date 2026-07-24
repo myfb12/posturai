@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Svg, { Line } from "react-native-svg";
 import { Screen } from "../components/ui/Screen";
 import { GlassCard } from "../components/ui/Glass";
 import { Button } from "../components/ui/Button";
@@ -39,6 +41,7 @@ function headPinBand(m: Measure | undefined): Band {
 export function ResultsScreen() {
   const result = usePostureStore(selectCurrentResult);
   const go = usePostureStore((s) => s.go);
+  const capturedUri = usePostureStore((s) => s.capturedUri);
   if (!result) return null;
 
   const head = result.measures.find((m) => m.key === "head");
@@ -60,24 +63,66 @@ export function ResultsScreen() {
         </View>
       )}
 
-      {/* Hero: scanned figure with floating callout pins */}
-      <GlassCard className="mt-4 items-center p-4" glow={color.acid}>
-        <View style={{ width: 220, height: 320 }}>
-          <PostureFigure ratios={result.ratios} t={0} width={220} height={320} />
+      {/* Hero: the captured photo (or the vector alignment preview when there's
+          no photo) with floating callout pins overlaid. */}
+      <GlassCard className="mt-4 p-3" glow={color.acid}>
+        <View
+          className="relative w-full overflow-hidden rounded-[16px]"
+          style={{ height: 360, backgroundColor: "#0a0b0e" }}
+        >
+          {capturedUri ? (
+            <>
+              <Image
+                source={{ uri: capturedUri }}
+                resizeMode="cover"
+                accessibilityLabel="Your captured scan photo"
+                style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%" }}
+              />
+              {/* darken toward the bottom so pins/labels stay legible on any photo */}
+              <LinearGradient
+                colors={["rgba(5,5,7,0.10)", "rgba(5,5,7,0.20)", "rgba(5,5,7,0.70)"]}
+                style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+              />
+              {/* plumb line for continuity with the rest of the app */}
+              <Svg width="100%" height="100%" style={{ position: "absolute" }}>
+                <Line x1="50%" y1="6%" x2="50%" y2="94%" stroke={color.acid} strokeWidth={1} strokeOpacity={0.4} strokeDasharray="3 7" />
+              </Svg>
+            </>
+          ) : (
+            <View className="flex-1 items-center justify-center">
+              <PostureFigure ratios={result.ratios} t={0} width={220} height={320} />
+            </View>
+          )}
+
           {head && (
             <CalloutPin x={0.62} y={0.14} label={`${head.display} drift`} band={head.band} icon="target" />
           )}
           {trunk && (
-            <CalloutPin
-              x={0.6}
-              y={0.42}
-              label={`Load: ${trunk.display}`}
-              band={trunk.band}
-              icon="bolt"
-            />
+            <CalloutPin x={0.6} y={0.42} label={`Load: ${trunk.display}`} band={trunk.band} icon="bolt" />
           )}
           <CalloutPin x={0.44} y={0.92} label="Base" band={result.measures.find((m) => m.key === "base")!.band} align="left" />
         </View>
+
+        {!capturedUri && (
+          <View className="mt-3 flex-row items-center justify-between px-1">
+            <Text className="font-mono text-[10px] text-zinc-500" style={{ letterSpacing: 1 }}>
+              NO PHOTO · ALIGNMENT PREVIEW
+            </Text>
+            <Pressable
+              onPress={() => go("capture")}
+              accessibilityRole="button"
+              accessibilityLabel="Retake photo"
+              hitSlop={10}
+              className="flex-row items-center gap-1.5 rounded-full border border-white/[0.12] px-3 py-1.5"
+              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+            >
+              <Icon name="camera" size={13} color={color.acid} />
+              <Text className="font-mono text-[10px] text-acid" style={{ letterSpacing: 1 }}>
+                RETAKE
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </GlassCard>
 
       {/* Index + potential headline */}
