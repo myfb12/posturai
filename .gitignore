@@ -1,0 +1,7 @@
+# Self-signed dev cert — machine/network specific, regenerate with prototype/make-cert.sh
+prototype/cert.pem
+prototype/key.pem
+
+node_modules/
+.DS_Store
+Thumbs.db

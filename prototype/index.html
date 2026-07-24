@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PosturAI — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,460;9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="stage">
+  <div class="phone" role="figure" aria-label="PosturAI iOS app prototype">
+    <div class="notch" aria-hidden="true"></div>
+    <div class="screen" id="screen">
+      <div class="statusbar" aria-hidden="true">
+        <span>9:41</span>
+        <span class="right">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+          <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/><rect x="21" y="4" width="1.6" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+        </span>
+      </div>
+
+      <!-- ============ CONSENT ============ -->
+      <section class="view consent active" id="v-consent" aria-label="Welcome and privacy">
+        <div class="view__body">
+          <div class="brandmark">
+            <div class="logo-plumb" aria-hidden="true">
+              <div class="axis"></div>
+              <div class="node" style="top:12%"></div>
+              <div class="node" style="top:40%"></div>
+              <div class="node" style="top:68%"></div>
+              <div class="bob"></div>
+            </div>
+            <div>
+              <div class="wordmark">Postur<b>AI</b></div>
+              <p class="tagline">A calm, private read on how you carry yourself.</p>
+            </div>
+          </div>
+
+          <div class="privacy-hero">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            <div>
+              <b>Your photos never leave this phone</b>
+              <span>Everything is analyzed on-device. Nothing is uploaded, stored in the cloud, or shared — ever.</span>
+            </div>
+          </div>
+
+          <div class="assurances">
+            <div class="assure">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+              <div><b>Guidance, not diagnosis</b><span>Posture awareness and gentle cues — never a medical claim.</span></div>
+            </div>
+            <div class="assure">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <div><b>Two minutes, once a week</b><span>Check in, watch the trend, and build one small habit.</span></div>
+            </div>
+          </div>
+          <p class="fineprint">PosturAI is a wellness tool, not a medical device. By continuing you agree to that — and to keeping this between you and your phone.</p>
+        </div>
+        <div class="footer-cta">
+          <button class="btn btn--primary tap" data-go="home">Get started</button>
+        </div>
+      </section>
+
+      <!-- ============ HOME ============ -->
+      <section class="view" id="v-home" aria-label="Today">
+        <div class="view__body">
+          <div class="home-head">
+            <div>
+              <div class="date">Wednesday · Jul 23</div>
+              <div class="greet">Good posture,<br>starts today.</div>
+            </div>
+            <div class="avatar" aria-hidden="true">Y</div>
+          </div>
+
+          <div class="section-label">Your last check</div>
+
+          <!-- skeleton state -->
+          <div class="card" id="lastcheck-skel">
+            <div class="skel-row" style="align-items:flex-start">
+              <div class="skel" style="width:78px;height:104px;border-radius:14px;flex:0 0 78px"></div>
+              <div class="skel-bar" style="padding-top:4px">
+                <div class="skel skel-line" style="width:45%;height:10px"></div>
+                <div class="skel skel-line" style="width:80%;height:18px"></div>
+                <div class="skel skel-line" style="width:95%"></div>
+                <div class="skel skel-line" style="width:50%;height:24px;border-radius:999px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- loaded state -->
+          <div class="card lastcheck" id="lastcheck-real" hidden>
+            <div class="lastcheck-fig" aria-hidden="true">
+              <svg width="80" height="104" viewBox="0 0 80 104">
+                <line class="plumb" x1="30" y1="6" x2="30" y2="98"/>
+                <path class="seg--flag seg" d="M54 18 L38 44"/>
+                <path class="seg--flag seg" d="M38 44 L31 72"/>
+                <path class="seg" d="M31 72 L30 98"/>
+                <circle class="kp kp--flag" cx="54" cy="18" r="5"/>
+                <circle class="kp kp--flag" cx="38" cy="44" r="5"/>
+                <circle class="kp" cx="31" cy="72" r="5"/>
+                <circle class="kp" cx="30" cy="98" r="5"/>
+              </svg>
+            </div>
+            <div class="meta">
+              <div class="check-date">Checked Mon, Jul 20</div>
+              <h3>Your head leans forward</h3>
+              <p>Hips and legs stack up well. The one area to work on sits up top.</p>
+              <span class="chip chip--attention">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v5M12 16h.01M12 3l9 16H3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Noticeably forward
+              </span>
+            </div>
+          </div>
+
+          <div class="section-label">Your rhythm</div>
+          <div class="card rhythm">
+            <div class="rhythm-item">
+              <div class="rhythm-ic" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div><b>Last check</b><span>Monday, Jul 20</span></div>
+            </div>
+            <div class="rhythm-sep" aria-hidden="true"></div>
+            <div class="rhythm-item">
+              <div class="rhythm-ic soon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+              </div>
+              <div><b>Next check</b><span>Anytime — weekly keeps it honest</span></div>
+            </div>
+          </div>
+
+          <div class="section-label">Today's focus</div>
+          <div class="card tip">
+            <div class="ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 21v-2M5 12H3M21 12h-2"/><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div>
+              <span class="focus-tag">Move 1 of 2 from your last check</span>
+              <p><b>Chin tuck, 3 slow reps.</b> Draw your chin straight back like a drawer sliding shut. Hold for five.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-cta">
+          <button class="btn btn--primary tap" data-go="capture">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Check my posture
+          </button>
+        </div>
+        <nav class="tabbar" aria-label="Primary"></nav>
+      </section>
+
+      <!-- ============ CAPTURE ============ -->
+      <section class="view capture" id="v-capture" aria-label="Guided capture">
+        <div class="view__body">
+          <div class="cam">
+            <video id="cam-video" class="cam-video" playsinline muted autoplay></video>
+            <canvas id="cam-canvas" hidden></canvas>
+            <div class="cam__grain" aria-hidden="true"></div>
+            <div class="plumb-guide" aria-hidden="true"></div>
+            <div class="silhouette" aria-hidden="true">
+              <svg width="164" height="470" viewBox="0 0 164 470" fill="none" opacity="0.8">
+                <g stroke="rgba(255,255,255,.85)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- head -->
+                  <circle cx="92" cy="30" r="21"/>
+                  <!-- back line: nape -> upper back -> lower back -> hip -->
+                  <path d="M96 51 C 100 74, 104 96, 100 128 C 96 168, 92 210, 92 250"/>
+                  <!-- front line: chin/throat -> chest -> belly -> hip -->
+                  <path d="M78 50 C 70 74, 66 100, 70 134 C 74 172, 78 214, 78 250"/>
+                  <!-- close at shoulders and hips -->
+                  <path d="M78 54 C 84 52, 90 52, 96 54"/>
+                  <path d="M78 250 C 82 254, 88 254, 92 250"/>
+                  <!-- arm hint -->
+                  <path d="M84 96 C 96 118, 98 150, 92 182"/>
+                  <!-- legs -->
+                  <path d="M84 250 C 82 300, 82 360, 82 452"/>
+                  <path d="M88 250 C 92 300, 92 360, 92 452"/>
+                  <!-- foot -->
+                  <path d="M82 452 C 74 456, 66 458, 60 458"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <button class="cam-close tap" data-go="home" aria-label="Close camera">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+
+          <div class="cap-head">
+            <div class="eyebrow">Side view</div>
+            <h2>Stand side-on and line up<br>inside the outline.</h2>
+            <p class="cap-sub">Left shoulder toward the camera, whole body in frame.</p>
+          </div>
+
+          <div class="level" aria-label="Phone is level" id="level">
+            <div class="ticks" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="bubble" id="bubble"></div>
+          </div>
+
+          <div class="coach-pills">
+            <span class="pill ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Phone is level</span>
+            <span class="pill ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Full body in frame</span>
+            <span class="pill" id="hold-pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg>Hold still — capturing on tap</span>
+          </div>
+
+          <div class="cam-hint" id="cam-hint" hidden></div>
+
+          <input type="file" id="file-input" accept="image/*" hidden>
+          <div class="cam-controls">
+            <button class="cam-side tap" id="pick-file" aria-label="Choose a photo from your library">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21 15l-5-5L5 21"/></svg>
+            </button>
+            <button class="shutter tap" id="shutter" aria-label="Capture photo" data-go="analyze"></button>
+            <button class="cam-side tap" id="cam-flip" aria-label="Switch camera">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v3M9 4H6a2 2 0 0 0-2 2v3M15 20h3a2 2 0 0 0 2-2v-3M9 20H6a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANALYZING (skeleton) ============ -->
+      <section class="view analyzing" id="v-analyze" aria-label="Analyzing" aria-busy="true">
+        <div class="view__body">
+          <div class="analyze-hero">
+            <div class="spinner-plumb" aria-hidden="true"><div class="axis"></div><div class="sweep"></div></div>
+            <h2>Reading your alignment</h2>
+            <p>On-device · nothing leaves your phone</p>
+          </div>
+
+          <div class="result-figure">
+            <div class="skel-row" style="align-items:flex-start">
+              <div class="pose-building" aria-hidden="true">
+                <img id="analyze-photo" class="analyze-photo" alt="" hidden>
+                <svg width="108" height="150" viewBox="0 0 108 150">
+                  <line class="plumb pose-plumb" x1="40" y1="8" x2="40" y2="144"/>
+                  <g class="pose-seg"><path class="seg--flag seg" d="M74 24 L52 60"/><path class="seg--flag seg" d="M52 60 L42 104"/><path class="seg" d="M42 104 L40 144"/></g>
+                  <circle class="kp kp--flag pose-node" style="--i:0" cx="74" cy="24" r="6"/>
+                  <circle class="kp kp--flag pose-node" style="--i:1" cx="52" cy="60" r="6"/>
+                  <circle class="kp pose-node" style="--i:2" cx="42" cy="104" r="6"/>
+                  <circle class="kp pose-node" style="--i:3" cx="40" cy="144" r="6"/>
+                </svg>
+              </div>
+              <div class="skel-bar" style="padding-top:6px">
+                <div class="skel skel-line" style="width:60%;height:22px"></div>
+                <div class="skel skel-line" style="width:95%"></div>
+                <div class="skel skel-line" style="width:88%"></div>
+                <div class="skel-metric"><div class="skel skel-dot"></div><div class="skel skel-line" style="flex:1"></div></div>
+                <div class="skel-metric"><div class="skel skel-dot"></div><div class="skel skel-line" style="flex:1"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="skel-bar">
+              <div class="skel skel-line" style="width:40%"></div>
+              <div class="skel skel-line" style="width:100%"></div>
+              <div class="skel skel-line" style="width:75%"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <div class="skel-bar">
+              <div class="skel skel-line" style="width:100%"></div>
+              <div class="skel skel-line" style="width:65%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RESULT ============ -->
+      <section class="view" id="v-result" aria-label="Your results">
+        <div class="view__body">
+          <div class="eyebrow" id="result-eyebrow" style="margin-top:6px">Your read · Jul 23</div>
+          <h1 class="title" id="result-title">Your head leans<br>forward.</h1>
+
+          <div class="your-capture" id="your-capture" hidden>
+            <img id="result-photo" alt="Your captured photo">
+            <div>
+              <b>Your capture</b>
+              <span>Read on-device — this photo never left your phone.</span>
+            </div>
+          </div>
+
+          <div class="result-figure" id="result-figure">
+            <span class="badge" id="figure-badge">Side view</span>
+
+            <!-- MOCK schematic (shown on click-through with no analyzed photo) -->
+            <svg id="figure-mock" width="100%" height="300" viewBox="0 0 340 300" role="img" aria-label="Side-profile posture with plumb line: head sits forward of shoulders, shoulders slightly rounded, hips aligned.">
+              <line class="plumb" x1="150" y1="20" x2="150" y2="286"/>
+              <text x="156" y="30" font-family="var(--mono)" font-size="9" fill="var(--muted)">aligned line</text>
+              <path class="seg--flag seg" d="M196 58 L168 118"/>
+              <path class="seg--flag seg" d="M168 118 L152 190"/>
+              <path class="seg" d="M152 190 L150 250"/>
+              <path class="seg" d="M150 250 L150 286"/>
+              <path class="dev-arc" d="M168 58 Q150 58 150 76"/>
+              <circle class="kp kp--flag" cx="196" cy="58" r="7"/>
+              <circle class="kp kp--flag" cx="168" cy="118" r="7"/>
+              <circle class="kp" cx="152" cy="190" r="7"/>
+              <circle class="kp" cx="150" cy="250" r="7"/>
+              <circle class="kp" cx="150" cy="286" r="7"/>
+              <text x="208" y="62" font-size="11" fill="var(--attention)" font-weight="600">ear</text>
+              <text x="180" y="120" font-size="11" fill="var(--attention)" font-weight="600">shoulder</text>
+              <text x="120" y="194" font-size="11" fill="var(--muted)">hip</text>
+            </svg>
+
+            <!-- REAL: your photo with the detected pose drawn on a canvas -->
+            <canvas id="figure-canvas" class="figure-canvas" hidden></canvas>
+
+            <!-- FAILURE: couldn't read a clear pose -->
+            <div id="figure-fail" class="figure-fail" hidden>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 10l6 4M15 10l-6 4"/></svg>
+              <b>Couldn't read a clear pose</b>
+              <span>Use a <b>side-on, full-body</b> photo in good light — head to feet, standing a few steps back.</span>
+            </div>
+          </div>
+
+          <div class="verdict">
+            <span class="verdict-band band--attention" id="verdict-band">Noticeably forward · room to lift</span>
+            <p id="verdict-copy">Your hips and legs stack up nicely. The story is higher up: your head leads forward of your shoulders — the classic screen-lean. It's common, and it's responsive.</p>
+          </div>
+
+          <div id="findings">
+            <div class="finding attention">
+              <span class="dot" aria-hidden="true"></span>
+              <div>
+                <h4>Head position <span class="band">Noticeably forward</span></h4>
+                <p>Your ear sits well ahead of your shoulder. Over a day of screen time this is what tightens the back of the neck.</p>
+              </div>
+            </div>
+            <div class="finding mild">
+              <span class="dot" aria-hidden="true"></span>
+              <div>
+                <h4>Shoulders <span class="band">Slightly rounded</span></h4>
+                <p>A gentle forward curl through the upper back. Easy to open up with a few resets through the day.</p>
+              </div>
+            </div>
+            <div class="finding aligned">
+              <span class="dot" aria-hidden="true"></span>
+              <div>
+                <h4>Hips &amp; base <span class="band">Well aligned</span></h4>
+                <p>Your pelvis stacks cleanly over your ankles. Nothing to change here — nice foundation.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="fix-card">
+            <div class="eyebrow">Your two moves</div>
+            <h3>Start with these today.</h3>
+            <div class="fix-item">
+              <div class="n">1</div>
+              <p><b>Chin tucks — 3 reps, twice a day.</b>Slide your chin straight back, hold five seconds, release.</p>
+            </div>
+            <div class="fix-item">
+              <div class="n">2</div>
+              <p><b>Doorway chest opener — 30 seconds.</b>Forearms on the frame, step through until you feel the stretch.</p>
+            </div>
+          </div>
+
+          <p class="disclaimer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:0 0 14px;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>
+            PosturAI is a wellness tool, not a medical device. If you have pain, see a clinician.
+          </p>
+        </div>
+        <div class="footer-cta">
+          <button class="btn btn--primary tap" data-go="compare">See your progress</button>
+        </div>
+        <nav class="tabbar" aria-label="Primary"></nav>
+      </section>
+
+      <!-- ============ COMPARE ============ -->
+      <section class="view" id="v-compare" aria-label="Progress comparison">
+        <div class="view__body">
+          <div class="eyebrow" style="margin-top:6px">Progress</div>
+          <h1 class="title">Two weeks,<br>side by side.</h1>
+
+          <div class="compare-grid">
+            <div class="compare-col">
+              <div class="cap">Jul 9</div>
+              <div class="compare-fig">
+                <svg width="100%" height="180" viewBox="0 0 150 200" role="img" aria-label="Two weeks ago: head strongly forward of the aligned line.">
+                  <line class="plumb" x1="66" y1="12" x2="66" y2="190"/>
+                  <path class="seg--flag seg" d="M104 34 L82 78"/>
+                  <path class="seg--flag seg" d="M82 78 L70 126"/>
+                  <path class="seg" d="M70 126 L67 166"/>
+                  <path class="seg" d="M67 166 L66 190"/>
+                  <circle class="kp kp--flag" cx="104" cy="34" r="6"/>
+                  <circle class="kp kp--flag" cx="82" cy="78" r="6"/>
+                  <circle class="kp" cx="70" cy="126" r="6"/>
+                  <circle class="kp" cx="66" cy="190" r="6"/>
+                  <text x="112" y="38" font-size="10" fill="var(--attention)" font-weight="600">ear</text>
+                </svg>
+              </div>
+              <div class="band-lbl band--attention">Noticeably forward</div>
+            </div>
+            <div class="compare-col">
+              <div class="cap">Today</div>
+              <div class="compare-fig">
+                <svg width="100%" height="180" viewBox="0 0 150 200" role="img" aria-label="Today: head has moved closer to the aligned line than on July 9.">
+                  <line class="plumb" x1="66" y1="12" x2="66" y2="190"/>
+                  <!-- ghost of previous ear position + movement arrow -->
+                  <circle cx="104" cy="34" r="6" fill="none" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 3"/>
+                  <path d="M99 36 L93 37" stroke="var(--aligned)" stroke-width="2" stroke-linecap="round" marker-end="url(#arw)"/>
+                  <defs><marker id="arw" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="var(--aligned)"/></marker></defs>
+                  <path class="seg" style="stroke:var(--amber)" d="M88 36 L74 80"/>
+                  <path class="seg" d="M74 80 L68 128"/>
+                  <path class="seg" d="M68 128 L67 166"/>
+                  <path class="seg" d="M67 166 L66 190"/>
+                  <circle class="kp" style="stroke:var(--amber)" cx="88" cy="36" r="6"/>
+                  <circle class="kp" cx="74" cy="80" r="6"/>
+                  <circle class="kp" cx="68" cy="128" r="6"/>
+                  <circle class="kp" cx="66" cy="190" r="6"/>
+                  <text x="30" y="30" font-size="9" fill="var(--muted)">2 wks ago</text>
+                </svg>
+              </div>
+              <div class="band-lbl band--mild">Slightly forward</div>
+            </div>
+          </div>
+
+          <div class="delta">
+            <span class="pill-delta">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+              Closer to aligned
+            </span>
+            <p>Your head has moved from <b>noticeably</b> to <b>slightly</b> forward — the dashed marker shows where it sat two weeks ago. Same two moves; keep going.</p>
+          </div>
+
+          <div class="card tip" style="margin-top:20px">
+            <div class="ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+            </div>
+            <p><b>Next check unlocks a trend line.</b> Three checks in and PosturAI starts charting your alignment over time.</p>
+          </div>
+        </div>
+        <div class="footer-cta">
+          <button class="btn btn--soft tap" data-go="home">Back to today</button>
+        </div>
+        <nav class="tabbar" aria-label="Primary"></nav>
+      </section>
+
+      <div class="home-indicator" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="caption">
+    <div class="flownav" id="flownav" role="tablist" aria-label="Jump to screen">
+      <button data-jump="consent" role="tab">1 · Welcome</button>
+      <button data-jump="home" role="tab">2 · Home</button>
+      <button data-jump="capture" role="tab">3 · Capture</button>
+      <button data-jump="analyze" role="tab">4 · Analyzing</button>
+      <button data-jump="result" role="tab">5 · Result</button>
+      <button data-jump="compare" role="tab">6 · Progress</button>
+    </div>
+    <p style="margin-top:12px">Click through the flow, or use the shutter and buttons inside the phone. Skeleton loaders appear on Home and while analyzing.</p>
+  </div>
+</div>
+<script type="module" src="pose.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
