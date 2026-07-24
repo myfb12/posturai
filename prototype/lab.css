@@ -1,0 +1,177 @@
+/* Repeatability Lab — a developer/calibration tool, not a user-facing screen.
+   Reuses the design tokens from styles.css but drops the phone frame: this is a
+   desk instrument, so it gets a plain wide document layout. */
+
+body.lab {
+  background: var(--paper);
+  display: block;
+  padding: var(--s6) var(--s5) var(--s7);
+}
+
+.lab-head { max-width: 760px; margin: 0 auto var(--s6); }
+.lab-head h1 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--s3);
+}
+.lede { color: var(--ink-2); line-height: 1.65; font-size: 15px; }
+.lede + .lede { margin-top: var(--s3); }
+.lede.small { font-size: 13.5px; color: var(--muted); }
+.lede a { color: var(--teal); }
+
+.lab-main { max-width: 980px; margin: 0 auto; }
+
+/* --- Drop zone --- */
+.drop {
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: var(--s7) var(--s5);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .18s var(--ease), background .18s var(--ease);
+}
+.drop:hover, .drop:focus-visible, .drop.over {
+  border-color: var(--teal);
+  background: var(--teal-wash);
+}
+.drop:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.drop-icon { width: 34px; height: 34px; color: var(--teal); margin-bottom: var(--s3); }
+.drop-title { font-weight: 600; font-size: 16px; margin-bottom: var(--s2); }
+.drop-sub { color: var(--muted); font-size: 13.5px; }
+
+/* --- Progress --- */
+.run { margin-top: var(--s5); }
+.bar {
+  height: 8px; border-radius: 99px; overflow: hidden;
+  background: var(--line);
+}
+.bar-fill {
+  height: 100%; width: 0%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-bright));
+  transition: width .2s var(--ease);
+}
+.run-label { margin-top: var(--s3); color: var(--ink-2); font-size: 14px; }
+
+/* --- Verdict --- */
+.verdict-card {
+  margin-top: var(--s5);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  border-left: 5px solid var(--muted);
+  box-shadow: var(--shadow-card);
+  padding: var(--s5);
+}
+.verdict-card.stable { border-left-color: var(--aligned); }
+.verdict-card.borderline { border-left-color: var(--amber); }
+.verdict-card.unstable { border-left-color: var(--attention); }
+.verdict-eyebrow {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: var(--s2);
+}
+.verdict-line {
+  font-family: var(--serif); font-size: clamp(21px, 3vw, 27px);
+  font-weight: 600; line-height: 1.25; margin-bottom: var(--s3);
+}
+.verdict-copy { color: var(--ink-2); line-height: 1.65; font-size: 14.5px; }
+
+/* --- Stat tiles --- */
+.stat-row {
+  display: grid; gap: var(--s3); margin-top: var(--s4);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.stat {
+  background: var(--surface); border-radius: var(--r-md);
+  border: 1px solid var(--line); padding: var(--s4);
+}
+.stat-val {
+  font-family: var(--serif); font-size: 26px; font-weight: 600;
+  line-height: 1.1; margin-bottom: var(--s1);
+}
+.stat-label { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+/* --- Sections --- */
+.sec {
+  font-family: var(--serif); font-size: 19px; font-weight: 600;
+  margin: var(--s6) 0 var(--s2);
+}
+.sec-note {
+  color: var(--ink-2); font-size: 13.5px; line-height: 1.6;
+  margin-bottom: var(--s4); max-width: 720px;
+}
+
+/* --- Tables --- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.tbl th, .tbl td {
+  padding: 10px var(--s4); text-align: right; white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.tbl th:first-child, .tbl td:first-child { text-align: left; }
+.tbl thead th {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--surface-2); position: sticky; top: 0;
+}
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Judgement pills — always carry a word, never color alone. */
+.pill {
+  display: inline-block; padding: 2px 9px; border-radius: 99px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .02em;
+}
+.pill.stable   { background: var(--aligned-wash);   color: var(--aligned); }
+.pill.borderline { background: #f6ecd6;             color: #8a6412; }
+.pill.unstable { background: var(--attention-wash); color: var(--attention); }
+.pill.aligned  { background: var(--aligned-wash);   color: var(--aligned); }
+.pill.mild     { background: #f6ecd6;               color: #8a6412; }
+.pill.attention{ background: var(--attention-wash); color: var(--attention); }
+@media (prefers-color-scheme: dark) {
+  .pill.borderline, .pill.mild { background: #3a2f14; color: var(--amber); }
+}
+
+/* --- Flip cards --- */
+.flip {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s4);
+  margin-bottom: var(--s3);
+}
+.flip h4 { font-size: 14.5px; margin-bottom: var(--s2); }
+.flip p { font-size: 13.5px; color: var(--ink-2); line-height: 1.6; }
+.flip .bands { margin-top: var(--s3); display: flex; gap: var(--s2); flex-wrap: wrap; }
+
+/* --- Actions / failures --- */
+.actions { display: flex; gap: var(--s3); margin-top: var(--s5); flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 14px;
+  padding: 11px var(--s5); min-height: 44px;
+  border-radius: 99px; border: 0; cursor: pointer;
+  background: var(--teal); color: #fff;
+}
+.btn.ghost { background: transparent; color: var(--teal); border: 1.5px solid var(--line-strong); }
+.btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+.fail-box {
+  margin-top: var(--s5); background: var(--attention-wash);
+  border-radius: var(--r-md); padding: var(--s4);
+}
+.fail-box h4 { font-size: 14.5px; margin-bottom: var(--s2); }
+.fail-box p { font-size: 13.5px; color: var(--ink-2); line-height: 1.6; }
+.fail-box ul { margin: var(--s3) 0 0 var(--s5); font-size: 13px; color: var(--ink-2); }
+.fail-box li { margin-bottom: 3px; }
+
+@media (max-width: 560px) {
+  body.lab { padding: var(--s5) var(--s4) var(--s6); }
+  .tbl th, .tbl td { padding: 9px var(--s3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill, .drop { transition: none; }
+}

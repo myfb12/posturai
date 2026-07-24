@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PosturAI — Repeatability Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lab.css">
+</head>
+<body class="lab">
+
+<header class="lab-head">
+  <h1>Repeatability Lab</h1>
+  <p class="lede">
+    Before any progress or trend feature can be honest, one thing has to be true:
+    <strong>the same person in the same pose has to measure the same way twice.</strong>
+    Shoot ~50 side-on photos of one person holding one posture — vary the things a real user
+    varies (hand-held angle, distance, lighting, which room) but <em>not</em> the posture itself.
+    Drop them in below. This runs the real pipeline on each and reports how much the read wobbles.
+  </p>
+  <p class="lede small">
+    Everything runs on-device, same as the app — nothing is uploaded.
+    <a href="index.html">← back to the prototype</a>
+  </p>
+</header>
+
+<main class="lab-main">
+
+  <section class="drop" id="drop" tabindex="0" role="button"
+           aria-label="Choose photos to analyze, or drop them here">
+    <svg viewBox="0 0 24 24" aria-hidden="true" class="drop-icon">
+      <path d="M12 16V4m0 0L8 8m4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <p class="drop-title">Drop photos here, or click to choose</p>
+    <p class="drop-sub">One person, one posture, many shots. 20+ gives a usable spread; 50 is better.</p>
+    <input type="file" id="files" accept="image/*" multiple hidden>
+  </section>
+
+  <section class="run" id="run" hidden aria-live="polite">
+    <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+    <p class="run-label" id="run-label">Loading the pose model…</p>
+  </section>
+
+  <section id="results" hidden>
+
+    <div class="verdict-card" id="verdict-card">
+      <p class="verdict-eyebrow">Verdict</p>
+      <h2 class="verdict-line" id="verdict-line"></h2>
+      <p class="verdict-copy" id="verdict-copy"></p>
+    </div>
+
+    <div class="stat-row" id="stat-row"></div>
+
+    <h3 class="sec">Per-measure stability</h3>
+    <p class="sec-note">
+      The question isn't "is the noise small" in the abstract — it's
+      <strong>small relative to the band it has to land in</strong>. Noise is reported as
+      ±2 SD (the shot-to-shot spread covering ~95% of shots) as a percentage of the narrowest band.
+      Above ~50% and a photo near a boundary will flip bands on a good day and a bad one alike.
+    </p>
+    <div class="table-wrap">
+      <table class="tbl" id="summary-tbl"></table>
+    </div>
+
+    <h3 class="sec">Band flips observed</h3>
+    <p class="sec-note">
+      The empirical answer, no statistics required: across identical postures, how many different
+      verdicts did the app actually produce? Anything other than one band per measure means the
+      app would tell this user their posture changed when it didn't.
+    </p>
+    <div id="flips"></div>
+
+    <h3 class="sec">Every shot</h3>
+    <div class="table-wrap">
+      <table class="tbl" id="detail-tbl"></table>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="csv">Download CSV</button>
+      <button class="btn ghost" id="reset">Start over</button>
+    </div>
+
+    <div id="failures"></div>
+  </section>
+
+</main>
+
+<script type="module" src="pose.js"></script>
+<script src="metrics.js"></script>
+<script src="lab.js"></script>
+</body>
+</html>

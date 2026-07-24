@@ -37,7 +37,31 @@ and buttons inside the phone, or press ← / → to step through screens.
 | `index.html` | All six screens inside an iPhone frame |
 | `styles.css` | Design tokens, components, light/dark themes, skeleton shimmer |
 | `app.js` | View routing, skeleton timing, capture micro-interactions |
-| `shots/` | Playwright screenshots (flow + dark mode + 375px) |
+| `metrics.js` | Shared source of truth: landmarks → ratios → qualitative bands (used by both `app.js` and `lab.js`) |
+| `pose.js` | MediaPipe Pose Landmarker wrapper |
+| `lab.html` / `lab.css` / `lab.js` | **Repeatability Lab** — a calibration tool (see below) |
+| `make-cert.sh` | Regenerates the self-signed HTTPS cert for the current LAN IP |
+| `shots/` | Playwright screenshots (flow + dark mode + 375px + lab) |
+
+## Repeatability Lab (`lab.html`)
+
+The LLM Council flagged one open question before any progress/trend feature can be honest:
+**does a single hand-held 2D photo give a *repeatable* read shot-to-shot?** The lab answers it
+empirically. Open `lab.html`, drop in ~50 side-on photos of one person holding **one** posture
+(vary the camera, not the pose), and it runs the real `pose.js` → `metrics.js` pipeline on each,
+then reports:
+
+- **detection rate** — how many photos produced a readable pose at all;
+- **noise per measure** — shot-to-shot spread (±2 SD) as a share of the narrowest band, since
+  what matters is whether the wobble is small *relative to the band it has to land in*;
+- **band flips** — the empirical test: across an unchanged posture, how many different verdicts
+  did the app actually produce? More than one per measure = the app would report phantom change;
+- a plain-language **verdict** (stable / borderline / not-repeatable) and a **CSV export**.
+
+Because it reuses `metrics.js`, it measures exactly what the app would show — the two can't drift.
+It runs fully on-device like the app; nothing is uploaded. This is a developer/calibration tool,
+so it's a plain wide document, not a phone screen. Use it to validate (or tune) the thresholds in
+`metrics.js` against real photos before trusting any trend feature.
 
 ## Design-review revisions (round 2)
 

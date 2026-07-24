@@ -204,26 +204,9 @@
     });
   }
 
-  // --- Metrics + bands from detected landmarks ---
-  var RANK = { aligned: 0, mild: 1, attention: 2 };
-
-  function band(value, mildAt, attentionAt) {
-    return value < mildAt ? "aligned" : value < attentionAt ? "mild" : "attention";
-  }
-
-  function computeMetrics(p) {
-    var torsoY = Math.abs(p.shoulder.y - p.hip.y) || 0.001;
-    var baseY = Math.abs(p.hip.y - p.ankle.y) || 0.001;
-    var head = Math.abs(p.ear.x - p.shoulder.x) / torsoY;
-    var trunk = Math.abs(p.shoulder.x - p.hip.x) / torsoY;
-    var base = Math.abs(p.hip.x - p.ankle.x) / baseY;
-    return {
-      head: head, trunk: trunk, base: base,
-      headBand: band(head, 0.18, 0.4),
-      trunkBand: band(trunk, 0.12, 0.26),
-      baseBand: band(base, 0.1, 0.2),
-    };
-  }
+  // --- Metrics + bands from detected landmarks (shared with lab.js via metrics.js) ---
+  var RANK = window.PosturAIMetrics.RANK;
+  var computeMetrics = window.PosturAIMetrics.computeMetrics;
 
   var BAND_LABEL = {
     head: { aligned: "Well aligned", mild: "Slightly forward", attention: "Noticeably forward" },
