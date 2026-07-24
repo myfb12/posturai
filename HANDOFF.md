@@ -1,8 +1,29 @@
 # PosturAI — Project Handoff
 
-**Last updated:** 2026-07-23
-**Status:** Working interactive prototype with real camera + real on-device posture analysis. Not yet the shipping app.
-**Repo:** `C:\Users\yasin\posturai` (git; remote `https://github.com/myfb12/posturai.git` — currently empty, nothing pushed yet)
+**Last updated:** 2026-07-24
+**Status:** Two tracks in the repo — (1) the honest **web prototype** with real on-device MediaPipe
+analysis (`prototype/`), and (2) a new **Expo/React Native app** (`app/`) that productizes it into a
+viral "Umax / Cal AI style" experience (dark + acid-lime, biometric matrix, scan animation). The app
+runs on the web target and is Playwright-verified; real on-device pose is a later phase.
+**Repo:** `C:\Users\yasin\posturai` (git; remote `https://github.com/myfb12/posturai.git` — pushed).
+
+## 0. The Expo app (`app/`) — newest work
+
+The current focus. Expo SDK 57 + TypeScript + NativeWind, six store-driven screens
+(Consent→Home→Capture→Analyzing→Results→Progress), a global Zustand `PostureStore`, real
+`expo-camera`/`expo-image-picker` hardware with permission checks, and a 6-card biometric results
+matrix with Cal-AI callout pins, an SVG bell curve, and a potential-morph slider. See
+[`app/README.md`](app/README.md) for how to run/test and the full screen list.
+
+**Critical honesty decision (LLM Council, round 3):** the app deliberately does **not** show
+fabricated clinical numbers (no "lbs of spinal force", no "inches of height lost"). A 2D photo can't
+produce them. Everything on screen is a transparent derivation of the real pose ratios — a composite
+**PosturAI Index (0–100)**, estimated angle *ranges*, app letter-grades marked "not a diagnosis", and
+a percentile labelled a modeled estimate. `app/src/data/postureModel.ts` is the single source of that
+framing. Do not reintroduce absolute clinical units without revisiting that ruling.
+
+Everything below (§1–§9) documents the **web prototype**, which remains the reference for the real
+pose pipeline.
 
 ---
 

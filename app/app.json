@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "PosturAI",
+    "slug": "posturai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#050507",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#050507",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "PosturAI uses the camera so you can take a side-on photo for your posture scan. Photos are analyzed on your device."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PosturAI needs access to your photos so you can analyze an existing side-on shot. Photos stay on your device."
+        }
+      ]
+    ]
+  }
+}
