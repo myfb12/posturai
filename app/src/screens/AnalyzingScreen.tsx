@@ -6,64 +6,90 @@ import { MonoLabel, Numeric } from "../components/ui/Typography";
 import { color } from "../theme/tokens";
 import { usePostureStore } from "../store/postureStore";
 import { sampleFreshScan } from "../data/mockScans";
+import { analyzeRatios } from "../data/postureModel";
+import { poseEngine } from "../pose/poseEngine";
 
-const SCAN_MS = 3400;
+const MIN_MS = 2600; // floor so the scan animation reads even if detection is instant
+const TIMEOUT_MS = 16000;
 
-// Diagnostic scan sequence. Progress 0→100, a laser line sweeping the figure,
-// and a live terminal log. Logs describe what the pipeline genuinely does.
+// Live terminal log describing what the on-device pipeline genuinely does.
 const LOG_STEPS: { at: number; text: string }[] = [
-  { at: 0.05, text: "› boot on-device pose engine" },
-  { at: 0.18, text: "› detecting body landmarks…" },
-  { at: 0.34, text: "› mapping cervical angle…" },
-  { at: 0.5, text: "› measuring trunk offset…" },
-  { at: 0.64, text: "› checking base / standing line…" },
-  { at: 0.78, text: "› scoring composite index…" },
-  { at: 0.9, text: "› estimating potential ceiling…" },
-  { at: 0.99, text: "✓ read complete" },
+  { at: 0.04, text: "› boot on-device pose engine" },
+  { at: 0.16, text: "› detecting body landmarks…" },
+  { at: 0.32, text: "› mapping cervical angle…" },
+  { at: 0.48, text: "› measuring trunk offset…" },
+  { at: 0.62, text: "› checking base / standing line…" },
+  { at: 0.76, text: "› scoring composite index…" },
+  { at: 0.88, text: "› estimating potential ceiling…" },
 ];
 
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+type Outcome =
+  | { kind: "result"; ratios: { head: number; trunk: number; base: number } }
+  | { kind: "sample" }
+  | { kind: "error"; reason: any };
+
 export function AnalyzingScreen() {
-  const completeAnalysis = usePostureStore((s) => s.completeAnalysis);
+  const { capturedUri, pushResult, pushError, useSampleResult } = usePostureStore();
   const [pct, setPct] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const sweep = useRef(new Animated.Value(0)).current;
-  const reduced = useRef(false);
-
-  // Preview the figure being scanned (sample ratios in the web-first phase).
   const preview = useRef(sampleFreshScan()).current;
 
   useEffect(() => {
-    let raf: number;
-    let done = false;
+    let cancelled = false;
+    let raf = 0;
     const start = Date.now();
 
-    AccessibilityInfo.isReduceMotionEnabled().then((r) => {
-      reduced.current = r;
-      if (!r) {
+    AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
+      if (!reduced && !cancelled) {
         Animated.loop(
-          Animated.timing(sweep, {
-            toValue: 1,
-            duration: 1400,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          })
+          Animated.timing(sweep, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.ease), useNativeDriver: false })
         ).start();
       }
     });
 
-    const tick = () => {
-      const p = Math.min(1, (Date.now() - start) / SCAN_MS);
+    // Run the real on-device pose engine on the captured photo.
+    const detection: Promise<Outcome> = (async () => {
+      if (!capturedUri) return { kind: "sample" };
+      const r = await poseEngine.detectRatios(capturedUri);
+      if (r.ok) return { kind: "result", ratios: r.ratios };
+      if (r.reason === "unavailable") return { kind: "sample" }; // native w/o dev build
+      return { kind: "error", reason: r.reason };
+    })();
+    const guarded: Promise<Outcome> = Promise.race([
+      detection,
+      delay(TIMEOUT_MS).then(() => ({ kind: "error", reason: "engine" }) as Outcome),
+    ]);
+
+    const loop = () => {
+      if (cancelled) return;
+      const p = Math.min(0.95, (Date.now() - start) / MIN_MS * 0.95);
       setPct(Math.round(p * 100));
       setLogs(LOG_STEPS.filter((s) => p >= s.at).map((s) => s.text));
-      if (p < 1) {
-        raf = requestAnimationFrame(tick);
-      } else if (!done) {
-        done = true;
-        setTimeout(() => completeAnalysis(), 450);
-      }
+      raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(loop);
+
+    Promise.all([guarded, delay(MIN_MS)]).then(([outcome]) => {
+      if (cancelled) return;
+      cancelAnimationFrame(raf);
+      setPct(100);
+      setLogs([...LOG_STEPS.map((s) => s.text), "✓ read complete"]);
+      setTimeout(() => {
+        if (cancelled) return;
+        if (outcome.kind === "result") pushResult(analyzeRatios(outcome.ratios, { isSample: false }));
+        else if (outcome.kind === "error") pushError(outcome.reason);
+        else useSampleResult();
+      }, 420);
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sweepY = sweep.interpolate({ inputRange: [0, 1], outputRange: [10, 300] });
@@ -75,44 +101,27 @@ export function AnalyzingScreen() {
         <Text className="mt-1 font-display-bold text-white text-[22px]">Reading your alignment</Text>
       </View>
 
-      {/* Figure + sweeping laser */}
       <View className="mt-4 flex-1 items-center justify-center">
         <View style={{ width: 220, height: 320 }}>
           <PostureFigure ratios={preview.ratios} t={0} width={220} height={320} />
           <Animated.View
             pointerEvents="none"
             style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              height: 2,
-              top: sweepY,
-              backgroundColor: color.acid,
-              shadowColor: color.acid,
-              shadowOpacity: 0.9,
-              shadowRadius: 12,
-              shadowOffset: { width: 0, height: 0 },
+              position: "absolute", left: 0, right: 0, height: 2, top: sweepY,
+              backgroundColor: color.acid, shadowColor: color.acid, shadowOpacity: 0.9, shadowRadius: 12, shadowOffset: { width: 0, height: 0 },
             }}
           />
           <Animated.View
             pointerEvents="none"
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              height: 60,
-              top: Animated.subtract(sweepY, 60),
-              backgroundColor: color.acid,
-              opacity: 0.08,
-            }}
+            style={{ position: "absolute", left: 0, right: 0, height: 60, top: Animated.subtract(sweepY, 60), backgroundColor: color.acid, opacity: 0.08 }}
           />
         </View>
       </View>
 
-      {/* Progress */}
       <View className="mb-2">
         <View className="flex-row items-end justify-between">
-          <Numeric className="text-[52px] text-acid">{pct}
+          <Numeric className="text-[52px] text-acid">
+            {pct}
             <Text className="font-mono text-[16px] text-zinc-500">%</Text>
           </Numeric>
           <MonoLabel className="mb-3">On-device · secure</MonoLabel>
@@ -122,14 +131,9 @@ export function AnalyzingScreen() {
         </View>
       </View>
 
-      {/* Terminal log */}
       <View className="mb-4 h-[132px] rounded-2xl border border-white/[0.08] bg-black/40 p-3">
         {logs.map((l, i) => (
-          <Text
-            key={i}
-            className="font-mono text-[11px]"
-            style={{ color: i === logs.length - 1 ? color.mint : color.zinc500, lineHeight: 16 }}
-          >
+          <Text key={i} className="font-mono text-[11px]" style={{ color: i === logs.length - 1 ? color.mint : color.zinc500, lineHeight: 16 }}>
             {l}
           </Text>
         ))}

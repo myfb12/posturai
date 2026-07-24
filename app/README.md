@@ -72,9 +72,26 @@ mobile viewport, zero console/page errors, no horizontal overflow on any screen,
 cards present, and assertions that no fabricated lbs/inches claims appear while the honest
 estimate/disclaimer labels do. Reference screenshots in [`shots/`](shots).
 
+## On-device pose engine
+
+Analysis is real and on-device — no cloud, no API. `src/pose/` is a platform-split engine:
+
+- **`poseEngine.web.ts`** (web target) runs **MediaPipe Pose Landmarker** (WASM), the same model as
+  the prototype. It detects landmarks from the captured/selected photo, computes the normalized
+  ratios, and feeds `analyzeRatios(...)`. Pick a real side-on photo via the gallery and you get a
+  genuine read; an unreadable image produces an **honest failure** ("Couldn't read a pose"), never
+  invented numbers. Only the model code is fetched (from CDN); the image never leaves the device.
+- **`poseEngine.native.ts`** (iOS/Android) reports `unavailable` for now and the app falls back to a
+  clearly-labelled SAMPLE result. Real native detection needs a native module that can't run in Expo
+  Go or build on Windows — see Roadmap.
+
+The Analyzing screen runs the engine during the scan animation and routes to a real result, an
+honest failure, or (no photo / native stub) a labelled sample.
+
 ## Roadmap
 
-- Wire real on-device pose (react-native-vision-camera + a TFLite/MediaPipe frame processor) via an
-  EAS dev build — replace the sample result in `PostureStore.completeAnalysis` with `analyzeRatios(realRatios)`.
+- **Native real detection**: react-native-vision-camera + a MediaPipe/TFLite frame processor (or Apple
+  Vision) via an EAS **dev build** (can't be built on Windows) — implement it in `poseEngine.native.ts`;
+  the rest of the pipeline already consumes its `PoseResult`.
 - Run the [`../prototype/lab.html`](../prototype) repeatability check on real photos before trusting the trend line.
 - Persist streak/scans (async-storage is installed) and add share/export.

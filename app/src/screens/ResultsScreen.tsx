@@ -42,6 +42,46 @@ export function ResultsScreen() {
   const result = usePostureStore(selectCurrentResult);
   const go = usePostureStore((s) => s.go);
   const capturedUri = usePostureStore((s) => s.capturedUri);
+  const analysisError = usePostureStore((s) => s.analysisError);
+  const useSampleResult = usePostureStore((s) => s.useSampleResult);
+
+  // Honest failure: the pose engine couldn't read a clear side-on pose. Say so —
+  // never invent numbers to fill the screen.
+  if (analysisError) {
+    const REASONS: Record<string, string> = {
+      "no-pose": "We couldn't find a full body in that photo.",
+      "low-confidence": "We found a person, but couldn't see the ear, shoulder and hip clearly enough.",
+      "too-small": "You're too small in the frame — stand so your whole body fills it, side-on.",
+      load: "That image couldn't be opened.",
+      engine: "The on-device pose engine didn't respond in time.",
+      unavailable: "Real detection isn't built into this preview yet.",
+    };
+    return (
+      <Screen>
+        <View className="mt-2">
+          <MonoLabel className="text-coral">Scan incomplete</MonoLabel>
+          <Text className="mt-1 font-display-bold text-white text-[24px]">Couldn&apos;t read a pose</Text>
+        </View>
+        <GlassCard className="mt-5 p-5">
+          <View className="h-11 w-11 items-center justify-center rounded-full" style={{ backgroundColor: color.coral + "22" }}>
+            <Icon name="target" size={22} color={color.coral} />
+          </View>
+          <Text className="mt-4 font-display text-zinc-200 text-[15px] leading-6">
+            {REASONS[analysisError] ?? "We couldn't read a clear pose from that photo."}
+          </Text>
+          <Text className="mt-3 font-display text-zinc-500 text-[13px] leading-5">
+            For a clean read: stand side-on (left shoulder to the camera), fit your whole body in
+            frame, plain background, good light.
+          </Text>
+        </GlassCard>
+        <View className="mt-6 gap-3">
+          <Button label="Retake photo" icon="camera" onPress={() => go("capture")} />
+          <Button label="See a sample result" variant="ghost" onPress={useSampleResult} />
+        </View>
+      </Screen>
+    );
+  }
+
   if (!result) return null;
 
   const head = result.measures.find((m) => m.key === "head");

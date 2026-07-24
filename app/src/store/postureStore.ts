@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ScanResult } from "../data/postureModel";
 import { sampleFreshScan, seedHistory } from "../data/mockScans";
+import { PoseReason } from "../pose/poseEngine.types";
 
 export type Screen =
   | "consent"
@@ -34,6 +35,7 @@ type State = {
   streak: number;
   routine: RoutineItem[];
   capturedUri: string | null;
+  analysisError: PoseReason | null; // set when the pose engine couldn't read a pose
 
   // navigation
   go: (screen: Screen) => void;
@@ -41,7 +43,9 @@ type State = {
 
   // capture → analyze → result pipeline
   submitPhoto: (uri: string | null) => void; // called by capture/gallery handlers
-  completeAnalysis: () => void; // called by the analyzing screen when the scan finishes
+  pushResult: (result: ScanResult) => void; // real (or sample) read succeeded
+  pushError: (reason: PoseReason) => void; // honest failure — no fabricated numbers
+  useSampleResult: () => void; // click-through / no-photo path
 
   toggleRoutine: (id: string) => void;
   resetDemo: () => void;
@@ -55,23 +59,36 @@ export const usePostureStore = create<State>((set, get) => ({
   streak: 3,
   routine: defaultRoutine,
   capturedUri: null,
+  analysisError: null,
 
   go: (screen) => set({ screen }),
 
   giveConsent: () => set({ consented: true, screen: "home" }),
 
-  // Wraps the existing (native) capture/gallery handlers: they hand us a URI,
-  // we stash it and move into the scan animation. Kept UI-agnostic on purpose so
-  // the real expo-camera/expo-image-picker handlers dispatch here unchanged.
-  submitPhoto: (uri) => set({ capturedUri: uri, screen: "analyzing" }),
+  // Wraps the native capture/gallery handlers: they hand us a URI, we stash it
+  // and move into the scan animation, which then runs the on-device pose engine.
+  submitPhoto: (uri) => set({ capturedUri: uri, analysisError: null, screen: "analyzing" }),
 
-  completeAnalysis: () => {
-    // Web-first phase: synthesize an honest sample result. When the on-device
-    // pose engine is wired, replace this with analyzeRatios(realRatios).
+  // A real (or sample) read succeeded — record it and show the results.
+  pushResult: (result) =>
+    set((s) => ({
+      scans: [...s.scans, result],
+      currentResultId: result.id,
+      analysisError: null,
+      screen: "results",
+    })),
+
+  // The pose engine couldn't read a clear pose. Show an honest failure — never
+  // invent numbers to fill the screen.
+  pushError: (reason) => set({ analysisError: reason, screen: "results" }),
+
+  // Click-through / no-photo path: a clearly-labelled SAMPLE result.
+  useSampleResult: () => {
     const result = sampleFreshScan();
     set((s) => ({
       scans: [...s.scans, result],
       currentResultId: result.id,
+      analysisError: null,
       screen: "results",
     }));
   },
@@ -88,6 +105,7 @@ export const usePostureStore = create<State>((set, get) => ({
       scans: seedHistory(),
       currentResultId: null,
       capturedUri: null,
+      analysisError: null,
       routine: defaultRoutine,
     }),
 }));
